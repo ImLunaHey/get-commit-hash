@@ -1,7 +1,7 @@
 {
   "name": "get-commit-hash",
   "description": "Get the current commit hash",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "module": "dist/index.js",
   "main": "dist/index.cjs",
