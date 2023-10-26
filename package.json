@@ -1,0 +1,19 @@
+{
+  "name": "get-commit-hash",
+  "module": "src/index.ts",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --target=node --minify",
+    "prepare": "bun run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
