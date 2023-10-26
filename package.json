@@ -1,19 +1,32 @@
 {
   "name": "get-commit-hash",
-  "module": "src/index.ts",
+  "description": "Get the current commit hash",
   "version": "0.0.1",
   "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.cjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./dist --target=node --minify",
+    "build": "tsup",
     "prepare": "bun run build"
   },
   "files": [
     "dist"
   ],
   "devDependencies": {
-    "bun-types": "latest"
+    "@arethetypeswrong/cli": "^0.12.2",
+    "bun-types": "latest",
+    "tsup": "^7.2.0"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "bun-plugin-dts": "^0.2.1"
   }
 }
