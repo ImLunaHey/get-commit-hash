@@ -1,14 +1,13 @@
-import assert from 'node:assert/strict';
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { afterEach, test } from 'node:test';
+import { afterEach, expect, test } from 'vitest';
 
 import {
   getCommitHash,
   getHashFromDisk,
   getHashFromEnvironment,
-} from '../dist/index.js';
+} from '../src/index';
 
 const environmentNames = [
   'RAILWAY_GIT_COMMIT_SHA',
@@ -41,13 +40,13 @@ test('reads a detached HEAD', () => {
   const root = repository();
   const hash = 'a'.repeat(40);
   writeFileSync(join(root, '.git', 'HEAD'), `${hash}\n`);
-  assert.equal(getHashFromDisk(root), hash);
+  expect(getHashFromDisk(root)).toBe(hash);
 });
 
 test('rejects invalid detached HEAD contents', () => {
   const root = repository();
   writeFileSync(join(root, '.git', 'HEAD'), 'not-a-commit\n');
-  assert.equal(getHashFromDisk(root), null);
+  expect(getHashFromDisk(root)).toBeNull();
 });
 
 test('reads a loose ref while starting in a nested directory', () => {
@@ -58,7 +57,7 @@ test('reads a loose ref while starting in a nested directory', () => {
   mkdirSync(join(root, '.git', 'refs', 'heads'), { recursive: true });
   writeFileSync(join(root, '.git', 'HEAD'), 'ref: refs/heads/main\n');
   writeFileSync(join(root, '.git', 'refs', 'heads', 'main'), `${hash}\n`);
-  assert.equal(getHashFromDisk(nested), hash);
+  expect(getHashFromDisk(nested)).toBe(hash);
 });
 
 test('reads a packed ref', () => {
@@ -69,14 +68,14 @@ test('reads a packed ref', () => {
     join(root, '.git', 'packed-refs'),
     `# pack-refs with: peeled fully-peeled sorted\n${hash} refs/heads/main\n`,
   );
-  assert.equal(getHashFromDisk(root), hash);
+  expect(getHashFromDisk(root)).toBe(hash);
 });
 
 test('rejects a ref path that escapes the Git directory', () => {
   const root = repository();
   writeFileSync(join(root, '.git', 'HEAD'), 'ref: ../../outside\n');
   writeFileSync(join(root, 'outside'), 'not-a-commit\n');
-  assert.equal(getHashFromDisk(root), null);
+  expect(getHashFromDisk(root)).toBeNull();
 });
 
 test('reads refs from a linked worktree common directory', () => {
@@ -94,7 +93,7 @@ test('reads refs from a linked worktree common directory', () => {
   writeFileSync(join(worktreeGit, 'HEAD'), 'ref: refs/heads/feature\n');
   writeFileSync(join(common, 'refs', 'heads', 'feature'), `${hash}\n`);
 
-  assert.equal(getHashFromDisk(checkout), hash);
+  expect(getHashFromDisk(checkout)).toBe(hash);
 });
 
 test('caches disk hashes per repository instead of globally', () => {
@@ -105,8 +104,8 @@ test('caches disk hashes per repository instead of globally', () => {
   writeFileSync(join(first, '.git', 'HEAD'), firstHash);
   writeFileSync(join(second, '.git', 'HEAD'), secondHash);
 
-  assert.equal(getHashFromDisk(first), firstHash);
-  assert.equal(getHashFromDisk(second), secondHash);
+  expect(getHashFromDisk(first)).toBe(firstHash);
+  expect(getHashFromDisk(second)).toBe(secondHash);
 });
 
 test('prefers deployment environment variables', () => {
@@ -114,13 +113,13 @@ test('prefers deployment environment variables', () => {
   process.env.GITHUB_SHA = 'github-hash';
   process.env.RAILWAY_GIT_COMMIT_SHA = 'railway-hash';
 
-  assert.equal(getHashFromEnvironment(), 'railway-hash');
-  assert.equal(getCommitHash(resolve('/not/a/repository')), 'railway-hash');
+  expect(getHashFromEnvironment()).toBe('railway-hash');
+  expect(getCommitHash(resolve('/not/a/repository'))).toBe('railway-hash');
 });
 
 test('returns null or unknown outside a repository', () => {
   for (const name of environmentNames) delete process.env[name];
   const directory = mkdtempSync(join(tmpdir(), 'get-commit-hash-empty-'));
-  assert.equal(getHashFromDisk(directory), null);
-  assert.equal(getCommitHash(directory), 'unknown');
+  expect(getHashFromDisk(directory)).toBeNull();
+  expect(getCommitHash(directory)).toBe('unknown');
 });
