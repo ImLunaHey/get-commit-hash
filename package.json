@@ -2,32 +2,59 @@
   "name": "get-commit-hash",
   "description": "Get the current commit hash",
   "version": "0.0.2",
+  "keywords": [
+    "git",
+    "commit",
+    "hash",
+    "sha",
+    "revision"
+  ],
+  "homepage": "https://github.com/ImLunaHey/get-commit-hash#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ImLunaHey/get-commit-hash.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ImLunaHey/get-commit-hash/issues"
+  },
+  "sideEffects": false,
   "type": "module",
   "module": "dist/index.js",
   "main": "dist/index.cjs",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "scripts": {
     "build": "tsup",
-    "prepare": "bun run build"
+    "test": "vitest run",
+    "check:package": "attw --pack .",
+    "prepare": "npm run build"
   },
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.12.2",
-    "bun-types": "latest",
-    "tsup": "^7.2.0"
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@types/node": "^26.0.0",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.5"
   },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "bun-plugin-dts": "^0.2.1"
+  "overrides": {
+    "esbuild": "^0.28.2"
   },
   "license": "MIT"
 }
