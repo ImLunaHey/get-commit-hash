@@ -1,0 +1,12 @@
+name: PR title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  conventional-commit:
+    uses: ImLunaHey/project-standards/.github/workflows/pr-title.yml@01a401ed9f5144726c586da229b3105be53e3c02
